@@ -1,16 +1,23 @@
 package com.example.v0.demo.model;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.time.*;
-import org.springframework.util.StringUtils;
+
 public class ToDo {
     private Long id;//Este se va a autocaluar espero :p
-    //@NotBlank(message = "El texto es si o si mano")//obligar a que ponga algo
-    //@Size(max = 120, message = "No mas de 120 caracteres")//Definir el tamano max y mandar mensaje erroneo :p
+    @NotBlank(message = "El texto es si o si mano")//obligar a que ponga algo
+    @NotNull(message = "Requerida manito")
+    @Size(max = 120, min = 1, message = "No mas de 120 caracteres y/o al menos uno")//Definir el tamano max y mandar mensaje erroneo :p
     private String text;
     private LocalDateTime dueDate;//Teiene mas usos o mas cositas
     private boolean doneFlag;
     private LocalDateTime doneDate;
-    //@NotBlank(message = "Requerida manito")
+    @NotNull(message = "Requerida manito")
+    @NotBlank(message = "El texto es si o si mano")
     private int priority;//Deberia de alguna manera validar el minimo y maximo?
     private LocalDateTime creationDate;
     /*
