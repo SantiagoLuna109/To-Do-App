@@ -1,5 +1,6 @@
 package com.example.v0.demo.controller;
 
+import com.example.v0.demo.model.PageResponse;
 import com.example.v0.demo.model.ToDo;
 import com.example.v0.demo.service.ToDoServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -49,5 +50,15 @@ public class ToDoControllerImpl implements ToDoController{//No olvidarse de hace
             return ResponseEntity.noContent().build();//Aqui checamos si ya fue eliminado
         }
         return ResponseEntity.notFound().build();
+    }
+    @Override
+    public ResponseEntity<PageResponse<ToDo>> getTodos(@RequestParam(required = false) Boolean done,
+                                                       @RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @RequestParam(defaultValue = "id") String sortField,
+                                                       @RequestParam(defaultValue = "asc") String sortDir){
+        PageResponse<ToDo> response = toDoService.getToDos(done, page, size, sortField, sortDir);
+        return  ResponseEntity.ok(response);
+
     }
 }
