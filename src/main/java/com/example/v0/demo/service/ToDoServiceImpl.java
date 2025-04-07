@@ -8,7 +8,7 @@ import java.util.*;
 
 @Service
 public class ToDoServiceImpl {
-    private final ToDoDAO todoDAO;//era el ToDoDao
+    private final ToDoDAO todoDAO;
     public ToDoServiceImpl(ToDoDAO todoDAO){
         this.todoDAO = todoDAO;
     }
@@ -16,7 +16,7 @@ public class ToDoServiceImpl {
         return todoDAO.findAll();
     }
     public ToDo add(ToDo toDo){
-        return todoDAO.save(toDo);//Aqui parece contraproducente epro al ser el dao solo lo agregamos en si
+        return todoDAO.save(toDo);
     }
     public boolean delete(Long id){
         return todoDAO.delete(id);
