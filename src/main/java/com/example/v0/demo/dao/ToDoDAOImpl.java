@@ -21,7 +21,7 @@ public class ToDoDAOImpl implements ToDoDAO{
     }
     @Override
     public ToDo save(ToDo todo){
-        Long id = idCnt.incrementAndGet();//Incrementar en base a los que ya esten uwu
+        Long id = idCnt.incrementAndGet();
         todo.setId(id);
         todo.setCreationDate(LocalDateTime.now());
         if (todo.isDoneFlag()){
@@ -44,7 +44,7 @@ public class ToDoDAOImpl implements ToDoDAO{
                 actualToDo.setDoneFlag(true);
                 actualToDo.setDoneDate(LocalDateTime.now());
             } else if(!todo.isDoneFlag()){
-                actualToDo.setDoneDate(null);//como no se ah hecho ps no se ocupa aun :p
+                actualToDo.setDoneDate(null);
                 actualToDo.setDoneFlag(false);
             }
             actualToDo.setPriority(todo.getPriority());
