@@ -11,15 +11,11 @@ import java.util.List;
 
 @RequestMapping("/todos")
 @RestController
-public class ToDoControllerImpl implements ToDoController{//No olvidarse de hacer el implementn
+public class ToDoControllerImpl implements ToDoController{
     private final ToDoServiceImpl toDoService;
-    public ToDoControllerImpl(ToDoServiceImpl toDoService){//Constructor por obra y gracia del espitiru santo
+    public ToDoControllerImpl(ToDoServiceImpl toDoService){
         this.toDoService = toDoService;
     }
-    /*@GetMapping
-    public List<To Do> getAllToDos(){
-        return toDoService.findAll();// obtener toodo
-    }*/
     @Override
     public ResponseEntity<List<ToDo>> getAllToDos(){
         List<ToDo> todos = toDoService.findAll();
@@ -29,25 +25,23 @@ public class ToDoControllerImpl implements ToDoController{//No olvidarse de hace
     @Override
     public ResponseEntity<ToDo> createToDo(@RequestBody ToDo todo){
         ToDo createToDo = toDoService.add(todo);
-        return new ResponseEntity<>(createToDo, HttpStatus.CREATED);//se crea la mafufada esta, osea new to do
+        return new ResponseEntity<>(createToDo, HttpStatus.CREATED);
     }
 
-    //@PutMapping("/todos/{id}")
     @Override
-    public ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo todo){//actualizar un to do
+    public ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo todo){
         ToDo updateToDo = toDoService.update(id,todo);
         if(updateToDo != null){
-            return ResponseEntity.ok(updateToDo);//si existe el to do ps se actualiza
+            return ResponseEntity.ok(updateToDo);
         }
-        return ResponseEntity.notFound().build();//aqui si solo dios sabe pk
+        return ResponseEntity.notFound().build();
     }
 
-    //@DeleteMapping("/todos/{id}")
     @Override
     public ResponseEntity<Void> deleteToDo(@PathVariable Long id){
         boolean deleted = toDoService.delete(id);
         if(deleted){
-            return ResponseEntity.noContent().build();//Aqui checamos si ya fue eliminado
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

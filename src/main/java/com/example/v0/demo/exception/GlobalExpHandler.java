@@ -18,7 +18,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExpHandler extends ResponseEntityExceptionHandler{
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request){//Cuando no se encuentre un recurso
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request){
         ErrorResponse error = new ErrorResponse(LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "Recurso No Encontrado",
@@ -27,7 +27,7 @@ public class GlobalExpHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, 
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request){
@@ -52,7 +52,6 @@ public class GlobalExpHandler extends ResponseEntityExceptionHandler{
                 request.getDescription(false));
         return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    //Como que se requiere una clase de respuesta de error
     public static class ErrorResponse {
         private LocalDateTime timeStamp;
         private int status;
