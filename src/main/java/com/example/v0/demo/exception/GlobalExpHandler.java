@@ -1,6 +1,5 @@
 package com.example.v0.demo.exception;
 
-import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExpHandler extends ResponseEntityExceptionHandler{
-    @ExceptionHandler(ResourceNotFoundException.class)//Esto cuando un recurso no se enecuntra
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request){//Cuando no se encuentre un recurso
         ErrorResponse error = new ErrorResponse(LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -28,7 +27,7 @@ public class GlobalExpHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, //Validacion de los que son @Valid und @RequestBody
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, 
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request){
@@ -67,7 +66,6 @@ public class GlobalExpHandler extends ResponseEntityExceptionHandler{
             this.message = message;
             this.path = path;
         }
-        //Ahora se ocupan getterzzzz
         public LocalDateTime getTimeStamp(){
             return timeStamp;
         }
