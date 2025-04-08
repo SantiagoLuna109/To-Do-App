@@ -10,13 +10,13 @@ import java.util.List;
 public interface ToDoController {
     @GetMapping("/todos")
     ResponseEntity<List<ToDo>> getAllToDos();
-    @PostMapping("/todos")
+    @PostMapping("")
     ResponseEntity<ToDo> createToDo(@RequestBody ToDo todo);
-    @PutMapping("/todos/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo todo);
-    @DeleteMapping("/todos/{id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteToDo(@PathVariable Long id);
-    @GetMapping
+    @GetMapping("")
     ResponseEntity<PageResponse<ToDo>> getTodos(@RequestParam(required = false) Boolean done,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size,
