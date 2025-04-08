@@ -47,12 +47,23 @@ public class ToDoControllerImpl implements ToDoController{
     }
     @Override
     public ResponseEntity<PageResponse<ToDo>> getTodos(@RequestParam(required = false) Boolean done,
+                                                       @RequestParam(required = false) String name,
+                                                       @RequestParam(required = false) int priority,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size,
                                                        @RequestParam(defaultValue = "id") String sortField,
                                                        @RequestParam(defaultValue = "asc") String sortDir){
-        PageResponse<ToDo> response = toDoService.getToDos(done, page, size, sortField, sortDir);
+        PageResponse<ToDo> response = toDoService.getToDos(done, name, priority, page, size, sortField, sortDir);
         return  ResponseEntity.ok(response);
-
+    }
+    @Override
+    public ResponseEntity<ToDo> markAsDone(@PathVariable Long id){
+        ToDo marked = toDoService.markAsDone(id);
+        return ResponseEntity.ok(marked);
+    }
+    @Override
+    public ResponseEntity<ToDo> markAsUndone(@PathVariable Long id){
+        ToDo marked = toDoService.markedAsUndone(id);
+        return ResponseEntity.ok(marked);
     }
 }

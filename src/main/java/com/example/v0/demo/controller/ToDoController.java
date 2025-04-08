@@ -18,8 +18,14 @@ public interface ToDoController {
     ResponseEntity<Void> deleteToDo(@PathVariable Long id);
     @GetMapping("")
     ResponseEntity<PageResponse<ToDo>> getTodos(@RequestParam(required = false) Boolean done,
+                                                @RequestParam(required = false) String name,
+                                                @RequestParam(required = false) int priority,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size,
                                                 @RequestParam(defaultValue = "id") String sortField,
                                                 @RequestParam(defaultValue = "asc") String sortDir);
+    @PostMapping("/{id}/done")
+    ResponseEntity<ToDo> markAsDone(@PathVariable Long id);
+    @PostMapping("/{id}/undone")
+    ResponseEntity<ToDo> markAsUndone(@PathVariable Long id);
 }

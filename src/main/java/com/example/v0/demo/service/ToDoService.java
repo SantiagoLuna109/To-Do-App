@@ -12,5 +12,7 @@ public interface ToDoService {
     ToDo add(ToDo toDo);
     boolean delete(Long id);
     ToDo update(Long id, ToDo todo);
-    PageResponse<ToDo> getToDos(Boolean done, int page, int size, String sortFiel, String sortDir);
+    PageResponse<ToDo> getToDos(Boolean done, String name, int priority, int page, int size, String sortFiel, String sortDir);
+    ToDo markAsDone(Long id);
+    ToDo markAsUndone(Long id);
 }
