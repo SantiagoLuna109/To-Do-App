@@ -7,10 +7,10 @@ public class ToDo {
     private LocalDateTime dueDate;
     private boolean doneFlag;
     private LocalDateTime doneDate;
-    private int priority;
+    private Integer priority;
     private LocalDateTime creationDate;
     public ToDo(){}
-    public ToDo(String text, LocalDateTime dueDate, boolean doneFlag, int priority){
+    public ToDo(String text, LocalDateTime dueDate, boolean doneFlag, Integer priority){
         this.text = text;
         this.dueDate = dueDate;
         this.doneFlag = doneFlag;
@@ -44,10 +44,10 @@ public class ToDo {
         this.doneFlag = doneFlag;
     }
 
-    public int getPriority(){
+    public Integer getPriority(){
         return priority;
     }
-    public void setPriority(int priority){
+    public void setPriority(Integer priority){
         this.priority = priority;
     }
 

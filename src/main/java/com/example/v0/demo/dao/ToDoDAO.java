@@ -7,6 +7,6 @@ import java.util.List;
 public interface ToDoDAO {
     List<ToDo> findAll();
     ToDo save(ToDo todo);
-    ToDo update(Long id, ToDo todo);
+    ToDo update(Long id, ToDo toDo);
     boolean delete(Long id);
 }

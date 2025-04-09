@@ -12,43 +12,43 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class ToDoDAOImpl implements ToDoDAO{
-    private final Map<Long, ToDo> todos = new ConcurrentHashMap<>();
+    private final Map<Long, ToDo> toDos = new ConcurrentHashMap<>();
     private final AtomicLong idCnt = new AtomicLong();
 
     @Override
     public List<ToDo> findAll(){
-        return new ArrayList<>(todos.values());
+        return new ArrayList<>(toDos.values());
     }
     @Override
-    public ToDo save(ToDo todo){
+    public ToDo save(ToDo toDo){
         Long id = idCnt.incrementAndGet();
-        todo.setId(id);
-        todo.setCreationDate(LocalDateTime.now());
-        if (todo.isDoneFlag()){
-            todo.setDoneDate(LocalDateTime.now());
+        toDo.setId(id);
+        toDo.setCreationDate(LocalDateTime.now());
+        if (toDo.isDoneFlag()){
+            toDo.setDoneDate(LocalDateTime.now());
         }
-        todos.put(id, todo);
-        return todo;
+        toDos.put(id, toDo);
+        return toDo;
     }
     @Override
     public boolean delete(Long id){
-        return todos.remove(id) != null;
+        return toDos.remove(id) != null;
     }
     @Override
-    public ToDo update(Long id, ToDo todo){
-        ToDo actualToDo = todos.get(id);
+    public ToDo update(Long id, ToDo toDo){
+        ToDo actualToDo = toDos.get(id);
         if (actualToDo != null){
-            actualToDo.setDueDate(todo.getDueDate());
-            actualToDo.setText(todo.getText());
-            if (!actualToDo.isDoneFlag() && todo.isDoneFlag()){
+            actualToDo.setDueDate(toDo.getDueDate());
+            actualToDo.setText(toDo.getText());
+            if (!actualToDo.isDoneFlag() && toDo.isDoneFlag()){
                 actualToDo.setDoneFlag(true);
                 actualToDo.setDoneDate(LocalDateTime.now());
-            } else if(!todo.isDoneFlag()){
+            } else if(!toDo.isDoneFlag()){
                 actualToDo.setDoneDate(null);
                 actualToDo.setDoneFlag(false);
             }
-            actualToDo.setPriority(todo.getPriority());
-            todos.put(id, actualToDo);
+            actualToDo.setPriority(toDo.getPriority());
+            toDos.put(id, actualToDo);
             return actualToDo;
         }
         return null;
