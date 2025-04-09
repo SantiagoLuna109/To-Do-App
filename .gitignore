@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Cosas random que salieron ###
+.DS_Store

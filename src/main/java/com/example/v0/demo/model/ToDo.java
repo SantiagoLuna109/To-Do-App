@@ -1,7 +1,6 @@
 package com.example.v0.demo.model;
 
 import java.time.*;
-import org.springframework.util.StringUtils;
 public class ToDo {
     private Long id;
     private String text;
