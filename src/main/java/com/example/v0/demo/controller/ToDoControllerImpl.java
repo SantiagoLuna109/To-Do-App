@@ -18,19 +18,19 @@ public class ToDoControllerImpl implements ToDoController{
     }
     @Override
     public ResponseEntity<List<ToDo>> getAllToDos(){
-        List<ToDo> todos = toDoService.findAll();
-        return ResponseEntity.ok(todos);
+        List<ToDo> toDos = toDoService.findAll();
+        return ResponseEntity.ok(toDos);
     }
 
     @Override
-    public ResponseEntity<ToDo> createToDo(@RequestBody ToDo todo){
-        ToDo createToDo = toDoService.add(todo);
+    public ResponseEntity<ToDo> createToDo(@RequestBody ToDo toDo){
+        ToDo createToDo = toDoService.add(toDo);
         return new ResponseEntity<>(createToDo, HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo todo){
-        ToDo updateToDo = toDoService.update(id,todo);
+    public ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo toDo){
+        ToDo updateToDo = toDoService.update(id,toDo);
         if(updateToDo != null){
             return ResponseEntity.ok(updateToDo);
         }
@@ -48,7 +48,7 @@ public class ToDoControllerImpl implements ToDoController{
     @Override
     public ResponseEntity<PageResponse<ToDo>> getTodos(@RequestParam(required = false) Boolean done,
                                                        @RequestParam(required = false) String name,
-                                                       @RequestParam(required = false) int priority,
+                                                       @RequestParam(required = false) Integer priority,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size,
                                                        @RequestParam(defaultValue = "id") String sortField,
@@ -63,7 +63,7 @@ public class ToDoControllerImpl implements ToDoController{
     }
     @Override
     public ResponseEntity<ToDo> markAsUndone(@PathVariable Long id){
-        ToDo marked = toDoService.markedAsUndone(id);
+        ToDo marked = toDoService.markAsUndone(id);
         return ResponseEntity.ok(marked);
     }
 }
