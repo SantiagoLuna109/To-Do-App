@@ -9,46 +9,62 @@ interface TodoTableProps {
     sortConfig: {key: keyof ToDo; direction: "asc" | "desc"} | null;
 }
 
-const TodoTable: React.FC<TodoTableProps> = ({toDos, onDelete, onEdit, onSort, sortConfig}) => {
-    const getRowStyle = (dueDate?: string): React.CSSProperties => {
-        if(!dueDate) return {};
-        const due = new Date(dueDate);
-        const today = new Date();
-        const diffTime = due.getTime() - today.getTime();
-        const diffDays = diffTime / (1000 * 3600 * 24);
-        if(diffDays < 7){
-            return { backgroundColor: "red"};
-        } else if(diffDays < 14 ){
-            return { backgroundColor: "yellow"};
-        } else {
-            return {backgroundColor: "green"};
-        }
+const TodoTable: React.FC<TodoTableProps> = ({ toDos, onDelete, onEdit, onSort, sortConfig }) => {
+    const getRowStyle = (dueDate: string | null): React.CSSProperties => {
+      if (!dueDate) return {};
+      const due = new Date(dueDate);
+      const today = new Date();
+      const diffTime = due.getTime() - today.getTime();
+      const diffDays = diffTime / (1000 * 3600 * 24);
+      if (diffDays < 7) {
+        return { backgroundColor: "red" };
+      } else if (diffDays < 14) {
+        return { backgroundColor: "yellow" };
+      } else {
+        return { backgroundColor: "green" };
+      }
     };
+  
     const renderSortIcon = (key: keyof ToDo) => {
-        if (!sortConfig || sortConfig.key !== key) return null;
-        return sortConfig.direction === "asc" ? "UP" : "DOWN"; //Buscar flechitas hacia arriba y hacia abajo,cfreo existe el emoji
+      if (!sortConfig || sortConfig.key !== key) return null;
+      return sortConfig.direction === "asc" ? "↑" : "↓";
     };
-    return(
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th onClick={() => onSort("priority")}>Priority {renderSortIcon("priority")}</th>
-                    <th onClick={() => onSort("dueDate")}>Due-Date {renderSortIcon("dueDate")}</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {toDos.map((toDo) => (
-                    <tr key={toDo.id} style={getRowStyle(toDo.dueDate)}>
-                        <td style={{textDecoration: toDo.done ? "line-through": "none"}}>{toDo.name}</td>
-                        <td>{toDo.priority}</td>
-                        <td>{toDo.dueDate ? new Date(toDo.dueDate).toLocaleDateString(): - "-"}</td>
-                        <td><button onClick={() => onEdit(toDo)}>Edit</button> <button onClick={() => onDelete(toDo.id)}>Delete</button></td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+  
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Text</th>
+            <th onClick={() => onSort("priority")}>
+              Priority {renderSortIcon("priority")}
+            </th>
+            <th onClick={() => onSort("dueDate")}>
+              Due Date {renderSortIcon("dueDate")}
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {toDos.map((toDo) => (
+            <tr key={toDo.id} style={getRowStyle(toDo.dueDate ?? null)}>
+              <td style={{ textDecoration: toDo.doneFlag ? "line-through" : "none" }}>{toDo.text}</td>
+              <td>
+                {toDo.priority === 1
+                  ? "High"
+                  : toDo.priority === 2
+                  ? "Medium"
+                  : "Low"}
+              </td>
+              <td>{toDo.dueDate ? new Date(toDo.dueDate).toLocaleDateString() : "-"}</td>
+              <td>
+                <button onClick={() => onEdit(toDo)}>Edit</button>
+                <button onClick={() => onDelete(toDo.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
-};
-export default TodoTable;
+  };
+  
+  export default TodoTable;

@@ -1,9 +1,10 @@
 export type Priority = "High" | "Medium" | "Low";
 export interface ToDo{
     id: number;
-    name: string;
-    priority: Priority;
-    dueDate?: string;
-    done: boolean;
-    timeToFinish?: number;
+    text: string;
+    dueDate?: string | null;
+    doneFlag: boolean;
+    doneDate?: string | null;
+    priority: number;
+    creationDate: string;
 }
