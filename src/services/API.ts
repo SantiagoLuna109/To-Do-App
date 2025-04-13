@@ -5,7 +5,7 @@ import { PageResponse } from "../types/PageResponse.ts";
 
 const API_Url = "http://localhost:9090/todos";
 
-export async function fetchToDos(page: number = 1, pageSize: number = 5): Promise<PageResponse<ToDo>> {
+export async function fetchToDos(page: number = 1, pageSize: number = 10): Promise<PageResponse<ToDo>> {
     const response = await fetch(`${API_Url}?page=${page}&pageSize=${pageSize}`);
     if(!response.ok){
         throw new Error("Error in fetch the ToDos");

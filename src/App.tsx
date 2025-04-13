@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>("All");
   const [selectedState, setSelectedState] = useState<string>("All");
   const [sortConfig, setSortConfig] = useState<{ key: keyof ToDo; direction: "asc" | "desc" } | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const pageSize = 5;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingTodo, setEditingTodo] = useState<ToDo | null>(null);
@@ -58,10 +58,22 @@ const App: React.FC = () => {
     });
   }, [filteredTodos, sortConfig]);
 
+  const loadTodos = async () => {
+    try{
+      const data = await fetchToDos(currentPage, pageSize);
+      console.log("LoadToDos ", data);
+      setTodos(data.content);
+      setTodosPage(data);
+    }catch(error){
+      console.error(error);
+    }
+  }
+
   const handleDelete = async (id: number) => {
     try {
       await deleteToDo(id);
       setTodos(prev => prev.filter(todo => todo.id !== id));
+      await loadTodos();
     } catch (error) {
       console.error(error);
     }
@@ -72,9 +84,11 @@ const App: React.FC = () => {
       if (id) {
         const updated = await updateToDo({ ...toDoData, id, creationDate: editingTodo!.creationDate });
         setTodos(prev => prev.map(item => (item.id === id ? updated : item)));
+        await loadTodos();
       } else {
         const created = await createToDo(toDoData);
         setTodos(prev => [...prev, created]);
+        await loadTodos();
       }
       setModalVisible(false);
       setEditingTodo(null);
@@ -86,6 +100,30 @@ const App: React.FC = () => {
   const handleEdit = (todo: ToDo) => {
     setEditingTodo(todo);
     setModalVisible(true);
+    
+  };
+
+  const handleToggleDone = async (toDo: ToDo) => {
+    try{
+      let updatedToDo;
+      if(toDo.doneFlag){
+        updatedToDo = await updateToDo({
+          ...toDo,
+          doneFlag: false,
+          doneDate: null
+        });
+      }else{
+        updatedToDo = await updateToDo({
+          ...toDo,
+          doneFlag: true,
+          doneDate: new Date().toISOString()
+        });
+      }
+      setTodos(prev => prev.map(item=> (item.id === toDo.id ? updatedToDo:item)));
+      await loadTodos();
+    }catch(error){
+      console.error(error);
+    }
   };
 
   const handleSort = (key: keyof ToDo) => {
@@ -109,13 +147,14 @@ const App: React.FC = () => {
         selectedState={selectedState}
         onStateChange={setSelectedState}
       />
-      <button onClick={() => setModalVisible(true)}>+ New To Do</button>
+      <button onClick={() => setModalVisible(true)}> New To Do</button>
       <TodoTable
         toDos={sortedTodos}
         onDelete={handleDelete}
         onEdit={handleEdit}
         onSort={handleSort}
         sortConfig={sortConfig}
+        onMarkDone={handleToggleDone}
       />
       <Pagination
         currentPage={currentPage}

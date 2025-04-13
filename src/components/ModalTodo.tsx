@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { ToDo } from "../types/Todo";
 
+const toDatetimeLocalString = (isoDate?: string | null): string => {
+  if (!isoDate) return "";
+  const date = new Date(isoDate);
+  const offset = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - offset);
+  return localDate.toISOString().slice(0, 16);
+};
+
 interface ModalTodoProps {
   toDo: ToDo | null;
   onClose: () => void;
@@ -10,17 +18,17 @@ interface ModalTodoProps {
 const ModalTodo: React.FC<ModalTodoProps> = ({ toDo, onClose, onSave }) => {
   const [text, setText] = useState<string>(toDo ? toDo.text : "");
   const [priority, setPriority] = useState<number>(toDo ? toDo.priority : 2);
-  const [dueDate, setDueDate] = useState<string>(toDo && toDo.dueDate ? toDo.dueDate.substring(0, 10) : "");
+  const [dueDate, setDueDate] = useState<string>(toDo ? toDatetimeLocalString(toDo.dueDate) : "");
   const [doneFlag, setDoneFlag] = useState<boolean>(toDo ? toDo.doneFlag : false);
-  const [doneDate, setDoneDate] = useState<string>(toDo && toDo.doneDate ? toDo.doneDate.substring(0, 10) : "");
+  const [doneDate, setDoneDate] = useState<string>(toDo ? toDatetimeLocalString(toDo.doneDate) : "");
 
   useEffect(() => {
     if (toDo) {
       setText(toDo.text);
       setPriority(toDo.priority);
-      setDueDate(toDo.dueDate ? toDo.dueDate.substring(0, 10) : "");
+      setDueDate(toDo.dueDate ? toDatetimeLocalString(toDo.dueDate) : "");
       setDoneFlag(toDo.doneFlag);
-      setDoneDate(toDo.doneDate ? toDo.doneDate.substring(0, 10) : "");
+      setDoneDate(toDo.doneDate ? toDatetimeLocalString(toDo.doneDate) : "");
     } else {
       setText("");
       setPriority(2);
@@ -32,14 +40,18 @@ const ModalTodo: React.FC<ModalTodoProps> = ({ toDo, onClose, onSave }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const formattedDueDate = dueDate ? new Date(dueDate).toISOString() : null;
+    const formattedDoneDate = doneFlag ? (doneDate ? new Date(doneDate).toISOString(): new Date().toISOString()):null;
+
     const payload = {
       text,
-      dueDate: dueDate || null,
+      dueDate: formattedDueDate,
       doneFlag,
-      doneDate: doneFlag && doneDate ? doneDate : null,
+      doneDate: formattedDoneDate,
       priority,
     };
-    console.log("Enviando payload:", payload);
+
+    console.log("Sending payload:", payload);
     onSave(payload, toDo ? toDo.id : undefined);
   };
 
@@ -54,6 +66,7 @@ const ModalTodo: React.FC<ModalTodoProps> = ({ toDo, onClose, onSave }) => {
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
+              maxLength={120}
               required
             />
           </div>
@@ -68,7 +81,7 @@ const ModalTodo: React.FC<ModalTodoProps> = ({ toDo, onClose, onSave }) => {
           <div>
             <label>Due Date:</label>
             <input
-              type="date"
+              type="datetime-local"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
@@ -87,7 +100,7 @@ const ModalTodo: React.FC<ModalTodoProps> = ({ toDo, onClose, onSave }) => {
             <div>
               <label>Done Date:</label>
               <input
-                type="date"
+                type="datetime-local"
                 value={doneDate}
                 onChange={(e) => setDoneDate(e.target.value)}
                 required={doneFlag}
