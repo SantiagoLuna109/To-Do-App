@@ -17,7 +17,7 @@ public class Validator {
         }
     }
     public static void isNotEmptyPriority(Integer priority){
-        if(!Objects.isNull(priority) || priority < 0){
+        if(Objects.isNull(priority) || priority < 0){
             throw new ValidationException("The priority must be one of the options");
         }
     }

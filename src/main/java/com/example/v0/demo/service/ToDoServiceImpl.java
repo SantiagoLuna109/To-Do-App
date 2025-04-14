@@ -6,6 +6,8 @@ import com.example.v0.demo.model.PageResponse;
 import com.example.v0.demo.model.ToDo;
 import com.example.v0.demo.util.Validator;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,10 +39,10 @@ public class ToDoServiceImpl {
         }
         return updated;
     }
-    public PageResponse<ToDo> getToDos(Boolean done, String name, Integer priority, int page, int size, String sortFiel, String sortDir){
+    public PageResponse<ToDo> getToDos(Boolean done, String name, Integer priority, int page, int size, String sortField, String sortDir){
         List<ToDo> toDos = findAll();
         if (done != null){
-            toDos = toDos.stream().filter(t -> t.isDoneFlag() == done).toList();
+            toDos = toDos.stream().filter(t -> t.isDoneFlag() == done).collect((Collectors.toList()));
         }
         if (!Objects.isNull(name) && !name.isEmpty()){
             toDos = toDos.stream().filter(t -> !Objects.isNull(t.getText()) && t.getText().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
@@ -49,7 +51,7 @@ public class ToDoServiceImpl {
             toDos = toDos.stream().filter(t-> Objects.equals(t.getPriority(), priority)).collect(Collectors.toList());
         }
         Comparator<ToDo> comparator;
-        switch (sortFiel){
+        switch (sortField){
             case "text":
                 comparator = Comparator.comparing(ToDo::getText, Comparator.nullsLast(String::compareToIgnoreCase));
                 break;
@@ -91,5 +93,29 @@ public class ToDoServiceImpl {
             todoDAO.update(id, toDo);
         }
         return toDo;
+    }
+    public Map<String, Object> calculateMetrics(Boolean done, String name, Integer priority){
+        List<ToDo> toDos = findAll();
+        if(done != null){
+            toDos = toDos.stream().filter(t ->t.isDoneFlag() == done).collect(Collectors.toList());
+        }
+        if(name!=null && !name.isEmpty()){
+            toDos = toDos.stream().filter(t->t.getText()!=null && t.getText().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
+        }
+        if(priority!=null){
+            toDos = toDos.stream().filter(t->Objects.equals(t.getPriority(),priority)).collect(Collectors.toList());
+        }
+        Map<Integer, List<ToDo>> grouped = toDos.stream().filter(t->t.isDoneFlag() && t.getCreationDate() != null && t.getDoneDate() != null).collect(Collectors.groupingBy(ToDo::getPriority));
+        Map<Integer, Long> averageTimes = new HashMap<>();
+        for(Map.Entry<Integer, List<ToDo>> entry: grouped.entrySet()){
+            long avg = Math.round(entry.getValue().stream().mapToLong(t-> Duration.between(t.getCreationDate(),t.getDoneDate()).toMinutes()).average().orElse(0));
+            averageTimes.put(entry.getKey(),avg);
+        }
+        long globalAvg = Math.round(toDos.stream().filter(t->t.isDoneFlag() && t.getCreationDate() != null && t.getDoneDate() != null).mapToLong(t->Duration.between(t.getCreationDate(), t.getDoneDate()).toMinutes()).average().orElse(0));
+        Map<String, Object> result = new HashMap<>();
+        result.put("averageTimesByPriority",averageTimes);
+        result.put("globalAverage",globalAvg);
+        result.put("totalFilteres",toDos.size());
+        return result;
     }
 }
