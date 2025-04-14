@@ -136,6 +136,9 @@ const App: React.FC = () => {
     setSelectedState(value);
     setCurrentPage(0);
   }
+  const handleResetOrder = () => {
+    setSortConfig({key: "id", direction:"asc"});
+  }
 
   const totalPages = todosPage ? todosPage.totalPage : 0;
 
@@ -151,6 +154,7 @@ const App: React.FC = () => {
         onStateChange={handleStateChange}
       />
       <button onClick={() => setModalVisible(true)}>New To Do</button>
+      <button onClick={handleResetOrder}>Reset Order</button>
       <TodoTable
         toDos={todos}
         onDelete={handleDelete}
