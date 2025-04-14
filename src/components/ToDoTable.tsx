@@ -39,7 +39,7 @@ const TodoTable: React.FC<TodoTableProps> = ({
     if (diffDays < 7) {
       return { backgroundColor: "red" };
     } else if (diffDays < 14) {
-      return { backgroundColor: "yellow" };
+      return { backgroundColor: "#c8bd01" };
     } else {
       return { backgroundColor: "green" };
     }
@@ -65,7 +65,8 @@ const TodoTable: React.FC<TodoTableProps> = ({
               onChange={e => onToggleAll(e.target.checked)}
             />
           </th>
-          <th>Text</th>
+          <th onClick={() => onSort("text")}>
+            Text {renderSortIcon("text")}</th>
           <th onClick={() => onSort("priority")}>
             Priority {renderSortIcon("priority")}
           </th>
