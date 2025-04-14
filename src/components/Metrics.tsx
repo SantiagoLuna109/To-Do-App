@@ -1,48 +1,27 @@
-import React, { useMemo } from "react";
-import { ToDo } from "../types/Todo";
+import React from "react";
 
-interface MetricsProps {
-  toDos: ToDo[];
+interface MetricsData {
+  globalAverage: number;
+  averageTimesByPriority: {
+    [key: string]: number;
+  };
+  totalFilteres: number;
 }
 
-const Metrics: React.FC<MetricsProps> = ({ toDos }) => {
-  const computeTimeDiff = (creationDate: string, doneDate: string): number => {
-    const start = new Date(creationDate);
-    const end = new Date(doneDate);
-    return Math.round((end.getTime() - start.getTime()) / (1000 * 60));
-  };
+interface MetricsProps {
+  metrics: MetricsData;
+}
 
-  const averageTimes = useMemo(() => {
-    const priorities = [1, 2, 3];
-    const averages: { [priority: number]: number } = {};
-    priorities.forEach((p) => {
-      const tasks = toDos.filter(
-        (toDo) =>
-          toDo.priority === p &&
-          toDo.doneFlag &&
-          toDo.creationDate &&
-          toDo.doneDate
-      );
-      const totalTime = tasks.reduce((sum, toDo) => {
-        return sum + computeTimeDiff(toDo.creationDate, toDo.doneDate!);
-      }, 0);
-      averages[p] = tasks.length ? Math.round(totalTime / tasks.length) : 0;
-    });
-    return averages;
-  }, [toDos]);
-
-  const overallAverage = useMemo(() => {
-    const sum = (averageTimes[1] || 0) + (averageTimes[2] || 0) + (averageTimes[3] || 0);
-    return Math.round(sum / 3);
-  }, [averageTimes]);
-
+const Metrics: React.FC<MetricsProps> = ({ metrics }) => {
+  const avgByPriority = metrics?.averageTimesByPriority || {};
   return (
     <div className="metrics">
       <h3>Metrics</h3>
-      <p>High Priority Average: {averageTimes[1]} mins</p>
-      <p>Medium Priority Average: {averageTimes[2]} mins</p>
-      <p>Low Priority Average: {averageTimes[3]} mins</p>
-      <p>Overall Average: {overallAverage} mins</p>
+      <p>High Priority Average: {avgByPriority["1"] ?? 0} mins</p>
+      <p>Medium Priority Average: {avgByPriority["2"] ?? 0} mins</p>
+      <p>Low Priority Average: {avgByPriority["3"] ?? 0} mins</p>
+      <p>Overall Average: {metrics.globalAverage ?? 0} mins</p>
+      <p>Total Filtered: {metrics.totalFilteres ?? 0}</p>
     </div>
   );
 };

@@ -58,7 +58,7 @@ const TodoTable: React.FC<TodoTableProps> = ({
             <tr key={toDo.id} style={getRowStyle(toDo.dueDate ?? null)}>
               <td>
                 <button onClick={() => onMarkDone(toDo)}>
-                    {toDo.doneFlag ? "" : "✓"}
+                    {toDo.doneFlag ? "✓" : ""}
                 </button>
               </td>
               <td style={{ textDecoration: toDo.doneFlag ? "line-through" : "none" }}>

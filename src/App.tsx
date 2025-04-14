@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { ToDo } from "./types/Todo";
 import { PageResponse } from "./types/PageResponse";
 import { fetchToDos, createToDo, updateToDo, deleteToDo } from "./services/API";
@@ -16,63 +16,37 @@ const App: React.FC = () => {
   const [selectedState, setSelectedState] = useState<string>("All");
   const [sortConfig, setSortConfig] = useState<{ key: keyof ToDo; direction: "asc" | "desc" } | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const pageSize = 5;
+  const pageSize = 10;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingTodo, setEditingTodo] = useState<ToDo | null>(null);
-
-  useEffect(() => {
-    async function loadTodos() {
-      try {
-        const data = await fetchToDos(currentPage, pageSize);
-        console.log("Respuesta de fetchTodos:", data);
-        setTodos(data.content);
-        setTodosPage(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    loadTodos();
-  }, [currentPage]);
-
-  const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      const matchesText = todo.text.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesPriority = selectedPriority === "All" || String(todo.priority) === selectedPriority;
-      const matchesState =
-        selectedState === "All" ||
-        (selectedState === "Done" && todo.doneFlag) ||
-        (selectedState === "Undone" && !todo.doneFlag);
-      return matchesText && matchesPriority && matchesState;
-    });
-  }, [todos, searchTerm, selectedPriority, selectedState]);
-
-  const sortedTodos = useMemo(() => {
-    if (!sortConfig) return filteredTodos;
-    return [...filteredTodos].sort((a, b) => {
-      const aValue = (a[sortConfig.key] ?? "") as string;
-      const bValue = (b[sortConfig.key] ?? "") as string;
-      if (aValue === undefined || bValue === undefined) return 0;
-      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-      return 0;
-    });
-  }, [filteredTodos, sortConfig]);
+  const [metrics, setMetrics] = useState<any>({});
 
   const loadTodos = async () => {
-    try{
-      const data = await fetchToDos(currentPage, pageSize);
-      console.log("LoadToDos ", data);
-      setTodos(data.content);
-      setTodosPage(data);
-    }catch(error){
+    try {
+      const data = await fetchToDos(
+        currentPage,
+        pageSize,
+        searchTerm,
+        selectedPriority,
+        selectedState,
+        sortConfig ? String(sortConfig.key) : "id",
+        sortConfig ? sortConfig.direction : "asc"
+      );
+      setTodos(data.pageResponse.content);
+      setTodosPage(data.pageResponse);
+      setMetrics(data.metrics);
+    } catch (error) {
       console.error(error);
     }
-  }
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, [currentPage, searchTerm, selectedPriority, selectedState, sortConfig]);
 
   const handleDelete = async (id: number) => {
     try {
       await deleteToDo(id);
-      setTodos(prev => prev.filter(todo => todo.id !== id));
       await loadTodos();
     } catch (error) {
       console.error(error);
@@ -82,12 +56,10 @@ const App: React.FC = () => {
   const handleSave = async (toDoData: Omit<ToDo, "id" | "creationDate">, id?: number) => {
     try {
       if (id) {
-        const updated = await updateToDo({ ...toDoData, id, creationDate: editingTodo!.creationDate });
-        setTodos(prev => prev.map(item => (item.id === id ? updated : item)));
+        await updateToDo({ ...toDoData, id, creationDate: editingTodo!.creationDate });
         await loadTodos();
       } else {
-        const created = await createToDo(toDoData);
-        setTodos(prev => [...prev, created]);
+        await createToDo(toDoData);
         await loadTodos();
       }
       setModalVisible(false);
@@ -100,28 +72,17 @@ const App: React.FC = () => {
   const handleEdit = (todo: ToDo) => {
     setEditingTodo(todo);
     setModalVisible(true);
-    
   };
 
-  const handleToggleDone = async (toDo: ToDo) => {
-    try{
-      let updatedToDo;
-      if(toDo.doneFlag){
-        updatedToDo = await updateToDo({
-          ...toDo,
-          doneFlag: false,
-          doneDate: null
-        });
-      }else{
-        updatedToDo = await updateToDo({
-          ...toDo,
-          doneFlag: true,
-          doneDate: new Date().toISOString()
-        });
+  const handleToggleDone = async (todo: ToDo) => {
+    try {
+      if (todo.doneFlag) {
+        await updateToDo({ ...todo, doneFlag: false, doneDate: null });
+      } else {
+        await updateToDo({ ...todo, doneFlag: true, doneDate: new Date().toISOString() });
       }
-      setTodos(prev => prev.map(item=> (item.id === toDo.id ? updatedToDo:item)));
       await loadTodos();
-    }catch(error){
+    } catch (error) {
       console.error(error);
     }
   };
@@ -147,9 +108,9 @@ const App: React.FC = () => {
         selectedState={selectedState}
         onStateChange={setSelectedState}
       />
-      <button onClick={() => setModalVisible(true)}> New To Do</button>
+      <button onClick={() => setModalVisible(true)}>New To Do</button>
       <TodoTable
-        toDos={sortedTodos}
+        toDos={todos}
         onDelete={handleDelete}
         onEdit={handleEdit}
         onSort={handleSort}
@@ -159,9 +120,9 @@ const App: React.FC = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={(page) => setCurrentPage(page)}
       />
-      <Metrics toDos={todos} />
+      <Metrics metrics={metrics} />
       {modalVisible && (
         <ModalTodo
           toDo={editingTodo}

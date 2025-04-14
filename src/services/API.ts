@@ -1,20 +1,42 @@
 import {
     ToDo
 } from "../types/Todo.ts";
-import { PageResponse } from "../types/PageResponse.ts";
 
 const API_Url = "http://localhost:9090/todos";
 
-export async function fetchToDos(page: number = 1, pageSize: number = 10): Promise<PageResponse<ToDo>> {
-    const response = await fetch(`${API_Url}?page=${page}&pageSize=${pageSize}`);
-    if(!response.ok){
-        throw new Error("Error in fetch the ToDos");
-    }
-    const data = await response.json();
-    console.log("Answer of fetchTodos ", data);
-    return data;
-}
+export async function fetchToDos(
+  page: number,
+  size: number,
+  searchTerm: string,
+  selectedPriority: string,
+  selectedState: string,
+  sortField: string,
+  sortDir: string
+) {
+  const params = new URLSearchParams();
+  params.append("page", String(page));
+  params.append("size", String(size));
+  if (selectedState === "Done") {
+    params.append("done", "true");
+  } else if (selectedState === "Undone") {
+    params.append("done", "false");
+  }
+  if (searchTerm) {
+    params.append("name", searchTerm);
+  }
+  if (selectedPriority !== "All") {
+    params.append("priority", selectedPriority);
+  }
+  params.append("sortField", sortField);
+  params.append("sortDir", sortDir);
 
+  const response = await fetch(`${API_Url}?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error("Error in fetch ToDos");
+  }
+  const data = await response.json();
+  return data;
+}
 export async function createToDo(ToDo:Omit<ToDo, "id" | "creationDate">): Promise<ToDo> {
     const response = await fetch(API_Url, { 
         method: "POST",

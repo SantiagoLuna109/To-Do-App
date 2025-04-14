@@ -16,8 +16,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         <button
           key={index}
           onClick={() => onPageChange(index)}
-          style={{ fontWeight: currentPage === index? "bold" : "normal" }}
-        >
+          style={{ fontWeight: currentPage === index? "bold" : "normal" }}>
           {index + 1}
         </button>
       ))}
