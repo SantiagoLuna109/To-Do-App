@@ -49,11 +49,11 @@ export async function createToDo(ToDo:Omit<ToDo, "id" | "creationDate">): Promis
     return response.json();
 }
 
-export async function updateToDo(ToDo:ToDo): Promise<ToDo> {
-    const response = await fetch(`${API_Url}/${ToDo.id}`, {
+export async function updateToDo(updatedData: { text: string; dueDate: string | null | undefined; doneFlag: boolean; doneDate: string | null; priority: number; }, id: number): Promise<ToDo> {
+    const response = await fetch(`${API_Url}/${id}`, {
         method: "PUT",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify(ToDo)
+        body: JSON.stringify(updatedData)
     });
     if(!response.ok){
         throw new Error("Error while Updating the ToDo");

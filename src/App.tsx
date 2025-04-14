@@ -45,18 +45,36 @@ const App: React.FC = () => {
   }, [currentPage, searchTerm, selectedPriority, selectedState, sortConfig]);
 
   const handleDelete = async (id: number) => {
-    try {
-      await deleteToDo(id);
-      await loadTodos();
-    } catch (error) {
-      console.error(error);
+    const confirmed = window.confirm("Do you want to delete the ToDo?");
+    if(confirmed){
+      try {
+        await deleteToDo(id);
+        await loadTodos();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
-  const handleSave = async (toDoData: Omit<ToDo, "id" | "creationDate">, id?: number) => {
+  const handleEdit = (todo: ToDo) => {
+    setEditingTodo(todo);
+    setModalVisible(true);
+  };
+
+  const handleSave = async (
+    toDoData: Omit<ToDo, "id" | "creationDate">,
+    id?: number
+  ) => {
     try {
-      if (id) {
-        await updateToDo({ ...toDoData, id, creationDate: editingTodo!.creationDate });
+      if (id !== undefined) {
+        const updatedData = {
+          text: toDoData.text,
+          dueDate: toDoData.dueDate !== undefined ? toDoData.dueDate : null,
+          doneFlag: toDoData.doneFlag,
+          doneDate: toDoData.doneDate !== undefined ? toDoData.doneDate : null,
+          priority: toDoData.priority,
+        };
+        await updateToDo(updatedData, id);
         await loadTodos();
       } else {
         await createToDo(toDoData);
@@ -68,19 +86,17 @@ const App: React.FC = () => {
       console.error(error);
     }
   };
-
-  const handleEdit = (todo: ToDo) => {
-    setEditingTodo(todo);
-    setModalVisible(true);
-  };
-
-  const handleToggleDone = async (todo: ToDo) => {
+  
+  const handleToggleDone = async (toDo: ToDo) => {
     try {
-      if (todo.doneFlag) {
-        await updateToDo({ ...todo, doneFlag: false, doneDate: null });
-      } else {
-        await updateToDo({ ...todo, doneFlag: true, doneDate: new Date().toISOString() });
-      }
+      const updatedData = {
+        text: toDo.text,
+        dueDate: toDo.dueDate,
+        doneFlag: !toDo.doneFlag,
+        doneDate: !toDo.doneFlag ? new Date().toISOString() : null,
+        priority: toDo.priority,
+      };
+      await updateToDo(updatedData, toDo.id);
       await loadTodos();
     } catch (error) {
       console.error(error);
@@ -95,6 +111,32 @@ const App: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
+  const handleToggleAll = async (done: boolean) => {
+    try {
+      const updatePromises = todos.map(async (toDo) => {
+        if (toDo.doneFlag !== done) {
+          const updatedData = {
+            text: toDo.text,
+            dueDate: toDo.dueDate,
+            doneFlag: done,
+            doneDate: done ? new Date().toISOString() : null,
+            priority: toDo.priority,
+          };
+          return await updateToDo(updatedData, toDo.id);
+        }
+        return null;
+      });
+      await Promise.all(updatePromises);
+      await loadTodos();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleStateChange = (value:string) => {
+    setSelectedState(value);
+    setCurrentPage(0);
+  }
+
   const totalPages = todosPage ? todosPage.totalPage : 0;
 
   return (
@@ -106,7 +148,7 @@ const App: React.FC = () => {
         selectedPriority={selectedPriority}
         onPriorityChange={setSelectedPriority}
         selectedState={selectedState}
-        onStateChange={setSelectedState}
+        onStateChange={handleStateChange}
       />
       <button onClick={() => setModalVisible(true)}>New To Do</button>
       <TodoTable
@@ -116,6 +158,7 @@ const App: React.FC = () => {
         onSort={handleSort}
         sortConfig={sortConfig}
         onMarkDone={handleToggleDone}
+        onToggleAll={handleToggleAll}
       />
       <Pagination
         currentPage={currentPage}
