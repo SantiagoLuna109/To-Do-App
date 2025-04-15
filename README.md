@@ -37,11 +37,11 @@
 
 }
 - And the next librearies:
-├─┬ @testing-library/react@16.3.0 extraneous
-│ └── react@19.1.0 deduped
-├─┬ react-dom@19.1.0 extraneous
-│ └── react@19.1.0 deduped
-└── react@19.1.0 extraneous
+- @testing-library/react@16.3.0 extraneous
+- react@19.1.0 deduped
+- react-dom@19.1.0 extraneous
+- react@19.1.0 deduped
+- react@19.1.0 extraneous
 ## How to use this App?
 In a terminar copy the next:
 ```bash
