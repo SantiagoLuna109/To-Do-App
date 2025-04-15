@@ -58,8 +58,8 @@ public class ToDoServiceImpl {
             case "dueDate":
                 comparator = Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(LocalDateTime::compareTo));
                 break;
-            case "creationDate":
-                comparator = Comparator.comparing(ToDo::getCreationDate, Comparator.nullsLast(LocalDateTime::compareTo));
+            case "priority":
+                comparator = Comparator.comparing(ToDo::getPriority, Comparator.nullsLast(Integer::compareTo));
                 break;
             default:
                 comparator = Comparator.comparing(ToDo::getId);
