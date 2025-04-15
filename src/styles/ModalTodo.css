@@ -1,0 +1,42 @@
+.modal-overlay{
+    justify-content: flex-start;
+    display: flex;
+    background-color: rgb(41, 41, 41);
+    border: 1px solid rgb(31, 31, 31);
+    box-shadow: 0 2px 4px rgb(20, 20, 20);
+    align-items: center;
+    margin: 1% 1% 1% 10%;
+    max-width: 25%;
+}
+.modal{
+    width: 100%;
+}
+.modal h2{
+    text-align: center;
+}
+.modal-row{
+    display: flex;
+    align-items: center;
+}
+
+.modal-row input, .modal-row select {
+    flex: 1;
+}
+
+.checkbox-label{
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+.modal-actions{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-actions button{
+    background-color: rgb(41, 41, 41);
+    border: 1px solid rgb(31, 31, 31);
+    box-shadow: 0 2px 4px rgb(20, 20, 20);
+    border-radius: 4px;
+    cursor: pointer;
+}
