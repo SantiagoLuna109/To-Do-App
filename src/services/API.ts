@@ -1,6 +1,6 @@
 import {
     ToDo
-} from "../types/Todo.ts";
+} from "../types/ToDo.ts";
 
 const API_Url = "http://localhost:9090/todos";
 

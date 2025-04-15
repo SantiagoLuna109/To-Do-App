@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ToDo } from "../types/Todo";
+import { ToDo } from "../types/ToDo";
+import '../styles/ModalTodo.css';
 
 const toDatetimeLocalString = (isoDate?: string | null): string => {
   if (!isoDate) return "";

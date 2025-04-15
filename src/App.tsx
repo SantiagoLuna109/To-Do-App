@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ToDo } from "./types/Todo";
+import { ToDo } from "./types/ToDo";
 import { PageResponse } from "./types/PageResponse";
 import { fetchToDos, createToDo, updateToDo, deleteToDo } from "./services/API";
 import Filters from "./components/Filters";
@@ -7,6 +7,7 @@ import TodoTable from "./components/ToDoTable";
 import ModalTodo from "./components/ModalTodo";
 import Pagination from "./components/Pagination";
 import Metrics from "./components/Metrics";
+import './styles/App.css';
 
 const App: React.FC = () => {
   const [todosPage, setTodosPage] = useState<PageResponse<ToDo> | null>(null);
@@ -153,8 +154,18 @@ const App: React.FC = () => {
         selectedState={selectedState}
         onStateChange={handleStateChange}
       />
-      <button onClick={() => setModalVisible(true)}>New To Do</button>
-      <button onClick={handleResetOrder}>Reset Order</button>
+      <button className="new-btn" onClick={() => setModalVisible(true)}>New To Do</button>
+      <button className="reset-btn" onClick={handleResetOrder}>Reset Order</button>
+      {modalVisible && (
+        <ModalTodo
+          toDo={editingTodo}
+          onClose={() => {
+            setModalVisible(false);
+            setEditingTodo(null);
+          }}
+          onSave={handleSave}
+        />
+      )}
       <TodoTable
         toDos={todos}
         onDelete={handleDelete}
@@ -170,16 +181,6 @@ const App: React.FC = () => {
         onPageChange={(page) => setCurrentPage(page)}
       />
       <Metrics metrics={metrics} />
-      {modalVisible && (
-        <ModalTodo
-          toDo={editingTodo}
-          onClose={() => {
-            setModalVisible(false);
-            setEditingTodo(null);
-          }}
-          onSave={handleSave}
-        />
-      )}
     </div>
   );
 };

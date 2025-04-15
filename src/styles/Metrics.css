@@ -1,0 +1,12 @@
+.metrics-block{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 80%;
+    margin: 1rem auto;
+    padding: 1rem;
+    border: 1px solid rgb(31, 31, 31);
+    border-radius: 8px;
+    background-color: rgb(41, 41, 41);
+    box-shadow: 0 2px 4px rgb(20, 20, 20);
+}

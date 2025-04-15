@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { ToDo } from "../types/Todo";
+import { ToDo } from "../types/ToDo";
+import '../styles/ToDoTable.css';
 
 interface TodoTableProps {
   toDos: ToDo[];
@@ -53,7 +54,7 @@ const TodoTable: React.FC<TodoTableProps> = ({
   const allDone = toDos.length > 0 && toDos.every(todo => todo.doneFlag);
 
   return (
-    <table>
+    <table className="todo-table">
       <thead>
         <tr>
           <th>
@@ -65,12 +66,12 @@ const TodoTable: React.FC<TodoTableProps> = ({
               onChange={e => onToggleAll(e.target.checked)}
             />
           </th>
-          <th onClick={() => onSort("text")}>
+          <th className="sortable" onClick={() => onSort("text")}>
             Text {renderSortIcon("text")}</th>
-          <th onClick={() => onSort("priority")}>
+          <th className="sortable" onClick={() => onSort("priority")}>
             Priority {renderSortIcon("priority")}
           </th>
-          <th onClick={() => onSort("dueDate")}>
+          <th className="sortable" onClick={() => onSort("dueDate")}>
             Due Date {renderSortIcon("dueDate")}
           </th>
           <th>Actions</th>
@@ -78,20 +79,20 @@ const TodoTable: React.FC<TodoTableProps> = ({
       </thead>
       <tbody>
         {toDos.map((toDo) => (
-          <tr key={toDo.id} style={getRowStyle(toDo.dueDate ?? null)}>
+          <tr key={toDo.id} className="todo-table-row" style={getRowStyle(toDo.dueDate ?? null)}>
                 <td>
                     <input type="checkbox" name="" id="" className="done-checkbox" checked={toDo.doneFlag} onChange={() => onMarkDone(toDo)}/>
                 </td>
-            <td style={{ textDecoration: toDo.doneFlag ? "line-through" : "none" }}>
+            <td className="todo-text" style={{ textDecoration: toDo.doneFlag ? "line-through" : "none" }}>
               {toDo.text}
             </td>
-            <td>
+            <td className="todo-priority"> 
               {toDo.priority === 1 ? "High" : toDo.priority === 2 ? "Medium" : "Low"}
             </td>
-            <td>{toDo.dueDate ? new Date(toDo.dueDate).toLocaleString() : "-"}</td>
-            <td>
-              <button onClick={() => onEdit(toDo)}>Edit</button>
-              <button onClick={() => onDelete(toDo.id)}>Delete</button>
+            <td className="todo-duedate">{toDo.dueDate ? new Date(toDo.dueDate).toLocaleString() : "-"}</td>
+            <td className="todo-actions">
+              <button className="edit-btn" onClick={() => onEdit(toDo)}>Edit</button>
+              <button className="delete-btn" onClick={() => onDelete(toDo.id)}>Delete</button>
             </td>
           </tr>
         ))}
