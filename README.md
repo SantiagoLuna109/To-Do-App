@@ -66,6 +66,7 @@ and execute the next comands
 ```
 You shloud see something like this:
 ![image](https://github.com/user-attachments/assets/acf89474-1020-4248-be98-1abba37443a3)
+
 and you could verify the page in the next url:
 ```bash
  http://localhost:8080/
