@@ -1,44 +1,41 @@
 package com.example.v0.demo.controller;
 
-import com.example.v0.demo.model.ToDo;
-import com.example.v0.demo.model.ToDosResponse;
+import com.example.v0.demo.dto.ToDoDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@RequestMapping("/todos")
 public interface ToDoController {
 
-    @PostMapping("")
-    ResponseEntity<ToDo> createToDo(@RequestBody ToDo toDo);
+    @PostMapping
+    ResponseEntity<ToDoDTO> createToDo(@RequestBody ToDoDTO dto);
 
     @PutMapping("/{id}")
-    ResponseEntity<ToDo> updateToDo(@PathVariable Long id, @RequestBody ToDo toDo);
+    ResponseEntity<ToDoDTO> updateToDo(@PathVariable Long id, @RequestBody ToDoDTO dto);
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteToDo(@PathVariable Long id);
 
-    @GetMapping("")
-    ResponseEntity<ToDosResponse> getTodos(
+    @GetMapping
+    ResponseEntity<Page<ToDoDTO>> getTodos(
+            Pageable pageable,                                // ← Spring builds this from ?page/&size/&sort=
             @RequestParam(required = false) Boolean done,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer priority,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDir
-    );
+            @RequestParam(required = false) Integer priority);
 
     @PostMapping("/{id}/done")
-    ResponseEntity<ToDo> markAsDone(@PathVariable Long id);
+    ResponseEntity<ToDoDTO> markAsDone(@PathVariable Long id);
+
+    @PostMapping("/{id}/undone")
+    ResponseEntity<ToDoDTO> markAsUndone(@PathVariable Long id);
 
     @GetMapping("/metrics")
     ResponseEntity<Map<String, Object>> getMetrics(
             @RequestParam(required = false) Boolean done,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer priority
-    );
-
-    @GetMapping("/{id}/undone")
-    ResponseEntity<ToDo> markAsUndone(@PathVariable Long id);
+            @RequestParam(required = false) Integer priority);
 }

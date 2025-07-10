@@ -1,67 +1,68 @@
 package com.example.v0.demo.model;
 
-import java.time.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Setter
+@Getter
+@Entity
+@Table(
+        name = "todos",
+        indexes = {
+                @Index(name = "idx_done_flag", columnList = "done_flag"),
+                @Index(name = "idx_priority",  columnList = "priority")
+        }
+)
 public class ToDo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String text;
+
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
-    private boolean doneFlag;
+
+    @Column(name = "done_flag", nullable = false)
+    private boolean doneFlag = false;
+
+    @Column(name = "done_date")
     private LocalDateTime doneDate;
-    private Integer priority;
+
+    @Column(nullable = false)
+    private Integer priority = 3;
+
+    @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
-    public ToDo(){}
-    public ToDo(String text, LocalDateTime dueDate, boolean doneFlag, Integer priority){
-        this.text = text;
-        this.dueDate = dueDate;
+
+    protected ToDo() { }
+
+    public ToDo(String text,
+                LocalDateTime dueDate,
+                boolean doneFlag,
+                Integer priority) {
+        this.text     = text;
+        this.dueDate  = dueDate;
         this.doneFlag = doneFlag;
         this.priority = priority;
     }
-    public Long getId(){
-        return id;
+
+    @PrePersist
+    private void onCreate() {
+        if (creationDate == null) {
+            creationDate = LocalDateTime.now();
+        }
     }
-    public void setId(Long id){
-        this.id = id;
+    public void mergeFrom(ToDo src) {
+        if (src.text != null)         this.text     = src.text;
+        if (src.dueDate != null)      this.dueDate  = src.dueDate;
+        if (src.priority != null)     this.priority = src.priority;
     }
 
-    public String getText(){
-        return text;
-    }
-    public void setText(String text){
-        this.text = text;
-    }
-
-    public LocalDateTime getDueDate(){
-        return dueDate;
-    }
-    public void setDueDate(LocalDateTime dueDate){
-        this.dueDate = dueDate;
-    }
-
-    public boolean isDoneFlag() {
-        return doneFlag;
-    }
-    public void setDoneFlag(boolean doneFlag){
-        this.doneFlag = doneFlag;
-    }
-
-    public Integer getPriority(){
-        return priority;
-    }
-    public void setPriority(Integer priority){
-        this.priority = priority;
-    }
-
-    public LocalDateTime getDoneDate(){
-        return doneDate;
-    }
-    public void setDoneDate(LocalDateTime doneDate){
-        this.doneDate = doneDate;
-    }
-
-    public LocalDateTime getCreationDate(){
-        return creationDate;
-    }
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
 }

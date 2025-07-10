@@ -1,10 +1,14 @@
 package com.example.v0.demo.service;
 
-import com.example.v0.demo.dao.ToDoDAO;
 import com.example.v0.demo.exception.ResourceNotFoundException;
-import com.example.v0.demo.model.PageResponse;
+import com.example.v0.demo.mapper.ToDoMapper;
 import com.example.v0.demo.model.ToDo;
+import com.example.v0.demo.repository.ToDoRepository;
 import com.example.v0.demo.util.Validator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -13,86 +17,75 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ToDoServiceImpl {
-    private final ToDoDAO todoDAO;
-    public ToDoServiceImpl(ToDoDAO todoDAO){
-        this.todoDAO = todoDAO;
-    }
-    public List<ToDo> findAll(){
-        return todoDAO.findAll();
-    }
-    public ToDo add(ToDo toDo){
+@RequiredArgsConstructor
+public class ToDoServiceImpl implements ToDoService{
+    private final ToDoRepository repository;
+    private final ToDoMapper mapper;
+
+    public ToDo add(ToDo toDo) {
         Validator.isNotEmpty(toDo.getText());
-        return todoDAO.save(toDo);
+        return repository.save(toDo);
     }
-    public boolean delete(Long id){
-        boolean deleted = todoDAO.delete(id);
-        if(!deleted){
+
+    public boolean delete(Long id) {
+        if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("No ToDo with id: " + id);
         }
-        return deleted;
+        repository.deleteById(id);
+        return true;
     }
-    public ToDo update(Long id, ToDo toDo){
-        ToDo updated = todoDAO.update(id,toDo);
-        if(Objects.isNull(updated)){
-            throw new ResourceNotFoundException("No ToDo with id: " + id);
-        }
-        return updated;
+
+    public ToDo update(Long id, ToDo patch) {
+        ToDo existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No ToDo with id: " + id));
+        existing.mergeFrom(patch);
+        return repository.save(existing);
     }
-    public PageResponse<ToDo> getToDos(Boolean done, String name, Integer priority, int page, int size, String sortField, String sortDir){
-        List<ToDo> toDos = findAll();
-        if (done != null){
-            toDos = toDos.stream().filter(t -> t.isDoneFlag() == done).collect((Collectors.toList()));
-        }
-        if (!Objects.isNull(name) && !name.isEmpty()){
-            toDos = toDos.stream().filter(t -> !Objects.isNull(t.getText()) && t.getText().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
-        }
-        if(!Objects.isNull(priority)){
-            toDos = toDos.stream().filter(t-> Objects.equals(t.getPriority(), priority)).collect(Collectors.toList());
-        }
-        Comparator<ToDo> comparator;
-        switch (sortField){
-            case "text":
-                comparator = Comparator.comparing(ToDo::getText, Comparator.nullsLast(String::compareToIgnoreCase));
-                break;
-            case "dueDate":
-                comparator = Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(LocalDateTime::compareTo));
-                break;
-            case "priority":
-                comparator = Comparator.comparing(ToDo::getPriority, Comparator.nullsLast(Integer::compareTo));
-                break;
-            default:
-                comparator = Comparator.comparing(ToDo::getId);
-                break;
-        }
-        if ("desc".equalsIgnoreCase(sortDir)){
-            comparator = comparator.reversed();
-        }
-        toDos.sort(comparator);
-        int totalElemnts = toDos.size();
-        int totalPages = (int) Math.ceil((double) totalElemnts / size);
-        int fromIndex = page * size;
-        int toIndex = Math.min(fromIndex + size, totalElemnts);
-        List<ToDo> paginated = fromIndex <toIndex ? toDos.subList(fromIndex, toIndex) : List.of();
-        return new PageResponse<>(paginated,page,totalPages,totalElemnts);
+
+    public Page<ToDo> getToDos(Boolean done,
+                               String name,
+                               Integer priority,
+                               Pageable pageable) {
+
+        Specification<ToDo> spec = Specification.where(null);
+
+        if (done != null)
+            spec = spec.and((root, q, cb) -> cb.equal(root.get("doneFlag"), done));
+
+        if (name != null && !name.isBlank())
+            spec = spec.and((root, q, cb) ->
+                    cb.like(cb.lower(root.get("text")), "%" + name.toLowerCase() + "%"));
+
+        if (priority != null)
+            spec = spec.and((root, q, cb) -> cb.equal(root.get("priority"), priority));
+
+        return repository.findAll(spec, pageable);
     }
-    public ToDo markAsDone(Long id){
-        ToDo toDo = findAll().stream().filter(t->t.getId().equals(id)).findFirst().orElseThrow(()-> new ResourceNotFoundException("No se encontro el ToDoo con el id: " + id));
-        if(!toDo.isDoneFlag()){
-            toDo.setDoneFlag(true);
-            toDo.setDoneDate(LocalDateTime.now());
-            todoDAO.update(id, toDo);
+
+
+    public ToDo markAsDone(Long id) {
+        ToDo t = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No ToDo with id: " + id));
+        if (!t.isDoneFlag()) {
+            t.setDoneFlag(true);
+            t.setDoneDate(LocalDateTime.now());
+            repository.save(t);
         }
-        return toDo;
+        return t;
     }
-    public ToDo markAsUndone(Long id){
-        ToDo toDo = findAll().stream().filter(t->t.getId().equals(id)).findFirst().orElseThrow(()-> new ResourceNotFoundException("No se encontro el ToDoo con el id: " + id));
-        if(toDo.isDoneFlag()){
-            toDo.setDoneDate(null);
-            toDo.setDoneFlag(false);
-            todoDAO.update(id, toDo);
+
+    public ToDo markAsUndone(Long id) {
+        ToDo t = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No ToDo with id: " + id));
+        if (t.isDoneFlag()) {
+            t.setDoneFlag(false);
+            t.setDoneDate(null);
+            repository.save(t);
         }
-        return toDo;
+        return t;
+    }
+    public List<ToDo> findAll() {
+        return repository.findAll();
     }
     public Map<String, Object> calculateMetrics(Boolean done, String name, Integer priority){
         List<ToDo> toDos = findAll();
