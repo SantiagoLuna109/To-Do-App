@@ -1,67 +1,42 @@
 package com.example.v0.demo.model;
 
-import java.time.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "todos")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder
 public class ToDo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Column(nullable = false)
     private String text;
+
     private LocalDateTime dueDate;
-    private boolean doneFlag;
+
+    @Column(nullable = false)
+    private boolean doneFlag = false;
+
     private LocalDateTime doneDate;
+
+    @Min(1) @Max(5)
     private Integer priority;
-    private LocalDateTime creationDate;
-    public ToDo(){}
-    public ToDo(String text, LocalDateTime dueDate, boolean doneFlag, Integer priority){
-        this.text = text;
-        this.dueDate = dueDate;
-        this.doneFlag = doneFlag;
-        this.priority = priority;
-    }
-    public Long getId(){
-        return id;
-    }
-    public void setId(Long id){
-        this.id = id;
-    }
 
-    public String getText(){
-        return text;
-    }
-    public void setText(String text){
-        this.text = text;
-    }
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationDate = LocalDateTime.now();
 
-    public LocalDateTime getDueDate(){
-        return dueDate;
-    }
-    public void setDueDate(LocalDateTime dueDate){
-        this.dueDate = dueDate;
-    }
-
-    public boolean isDoneFlag() {
-        return doneFlag;
-    }
-    public void setDoneFlag(boolean doneFlag){
-        this.doneFlag = doneFlag;
-    }
-
-    public Integer getPriority(){
-        return priority;
-    }
-    public void setPriority(Integer priority){
-        this.priority = priority;
-    }
-
-    public LocalDateTime getDoneDate(){
-        return doneDate;
-    }
-    public void setDoneDate(LocalDateTime doneDate){
-        this.doneDate = doneDate;
-    }
-
-    public LocalDateTime getCreationDate(){
-        return creationDate;
-    }
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void mergeFrom(ToDo src) {
+        if (src.text != null)        this.text     = src.text;
+        if (src.dueDate != null)     this.dueDate  = src.dueDate;
+        if (src.priority != null)    this.priority = src.priority;
     }
 }

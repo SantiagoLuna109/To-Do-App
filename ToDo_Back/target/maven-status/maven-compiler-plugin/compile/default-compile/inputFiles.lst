@@ -1,0 +1,15 @@
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/DemoApplication.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/config/WebConfig.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/controller/ToDoController.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/controller/ToDoControllerImpl.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/dto/ToDoDTO.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/exception/ResourceNotFoundException.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/exception/ValidationException.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/mapper/ToDoMapper.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/model/PageResponse.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/model/ToDo.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/model/ToDosResponse.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/repository/ToDoRepository.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/service/ToDoService.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/service/ToDoServiceImpl.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/util/Validator.java
