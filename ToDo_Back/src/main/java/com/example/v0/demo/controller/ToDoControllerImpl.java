@@ -1,5 +1,6 @@
 package com.example.v0.demo.controller;
 
+import com.example.v0.demo.dto.MetricsDTO;
 import com.example.v0.demo.dto.ToDoDTO;
 import com.example.v0.demo.service.ToDoService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,13 @@ public class ToDoControllerImpl implements ToDoController {
 
     @Override
     @GetMapping
-    public ResponseEntity<Page<ToDoDTO>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<ToDoDTO>> getAll(
+            @RequestParam(required = false) String  text,
+            @RequestParam(required = false) Integer priority,
+            @RequestParam(required = false) Boolean done,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(service.search(text, priority, done, pageable));
     }
 
     @Override
@@ -51,5 +57,14 @@ public class ToDoControllerImpl implements ToDoController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-}
 
+    @Override
+    @GetMapping("/metrics")
+    public ResponseEntity<MetricsDTO> getMetrics(
+            @RequestParam(required = false) String text,
+            @RequestParam(required = false) Integer priority,
+            @RequestParam(required = false) Boolean done) {
+        return ResponseEntity.ok(service.metrics(text, priority, done));
+    }
+
+}

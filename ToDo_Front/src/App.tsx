@@ -1,185 +1,160 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ToDo } from "./types/ToDo";
-import { PageResponse } from "./types/PageResponse";
-import { fetchToDos, createToDo, updateToDo, deleteToDo } from "./services/API";
-import Filters from "./components/Filters";
-import TodoTable from "./components/ToDoTable";
-import ModalTodo from "./components/ModalTodo";
+import {
+  fetchToDos,
+  createToDo,
+  updateToDo,
+  deleteToDo,
+  fetchMetrics
+} from "./services/API";
+import Filters    from "./components/Filters";
+import TodoTable  from "./components/ToDoTable";
+import ModalTodo  from "./components/ModalTodo";
 import Pagination from "./components/Pagination";
-import Metrics from "./components/Metrics";
-import './styles/App.css';
+import Metrics    from "./components/Metrics";
+import "./styles/App.css";
+
+const pageSize = 10;                          
 
 const App: React.FC = () => {
-  const [todosPage, setTodosPage] = useState<PageResponse<ToDo> | null>(null);
-  const [todos, setTodos] = useState<ToDo[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedPriority, setSelectedPriority] = useState<string>("All");
-  const [selectedState, setSelectedState] = useState<string>("All");
-  const [sortConfig, setSortConfig] = useState<{ key: keyof ToDo; direction: "asc" | "desc" } | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const pageSize = 10;
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [editingTodo, setEditingTodo] = useState<ToDo | null>(null);
+  const [todos,   setTodos]   = useState<ToDo[]>([]);
+  const [pages,   setPages]   = useState<number>(0);      
   const [metrics, setMetrics] = useState<any>({});
 
-  const loadTodos = async () => {
-    try {
-      const data = await fetchToDos(
+  const [searchTerm,       setSearchTerm]       = useState("");
+  const [selectedPriority, setSelectedPriority] = useState("All");
+  const [selectedState,    setSelectedState]    = useState("All");
+  const [sortConfig,       setSortConfig]       = useState<
+    { key: keyof ToDo; direction: "asc" | "desc" } | null
+  >(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingTodo,  setEditingTodo]  = useState<ToDo | null>(null);
+
+  const loadTodos = useCallback(async () => {
+    const [page, m] = await Promise.all([
+      fetchToDos(
         currentPage,
         pageSize,
         searchTerm,
         selectedPriority,
         selectedState,
         sortConfig ? String(sortConfig.key) : "id",
-        sortConfig ? sortConfig.direction : "asc"
-      );
-      setTodos(data.pageResponse.content);
-      setTodosPage(data.pageResponse);
-      setMetrics(data.metrics);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+        sortConfig ? sortConfig.direction   : "asc"
+      ),
+      fetchMetrics(searchTerm, selectedPriority, selectedState)
+    ]);
+  
+    setTodos(page.content);
+    setPages(page.totalPages);
+  
+    setMetrics({
+      globalAverage: m.overallAverage,
+      averageTimesByPriority: m.averageTimesByPriority,
+      totalFilteres: m.total            
+    });
+  }, [
+    currentPage,
+    pageSize,
+    searchTerm,
+    selectedPriority,
+    selectedState,
+    sortConfig,
+  ]);
 
-  useEffect(() => {
-    loadTodos();
-  }, [currentPage, searchTerm, selectedPriority, selectedState, sortConfig]);
+  useEffect(() => { loadTodos(); }, [loadTodos]);
 
   const handleDelete = async (id: number) => {
-    const confirmed = window.confirm("Do you want to delete the ToDo?");
-    if(confirmed){
-      try {
-        await deleteToDo(id);
-        await loadTodos();
-      } catch (error) {
-        console.error(error);
-      }
+    if (window.confirm("Delete this To-Do?")) {
+      await deleteToDo(id);
+      await loadTodos();
     }
-  };
-
-  const handleEdit = (todo: ToDo) => {
-    setEditingTodo(todo);
-    setModalVisible(true);
   };
 
   const handleSave = async (
-    toDoData: Omit<ToDo, "id" | "creationDate">,
+    data: Omit<ToDo, "id" | "creationDate">,
     id?: number
   ) => {
-    try {
-      if (id !== undefined) {
-        const updatedData = {
-          text: toDoData.text,
-          dueDate: toDoData.dueDate !== undefined ? toDoData.dueDate : null,
-          doneFlag: toDoData.doneFlag,
-          doneDate: toDoData.doneDate !== undefined ? toDoData.doneDate : null,
-          priority: toDoData.priority,
-        };
-        await updateToDo(updatedData, id);
-        await loadTodos();
-      } else {
-        await createToDo(toDoData);
-        await loadTodos();
-      }
-      setModalVisible(false);
-      setEditingTodo(null);
-    } catch (error) {
-      console.error(error);
+    if (id !== undefined) {
+      await updateToDo(data, id);
+    } else {
+      await createToDo(data);
     }
-  };
-  
-  const handleToggleDone = async (toDo: ToDo) => {
-    try {
-      const updatedData = {
-        text: toDo.text,
-        dueDate: toDo.dueDate,
-        doneFlag: !toDo.doneFlag,
-        doneDate: !toDo.doneFlag ? new Date().toISOString() : null,
-        priority: toDo.priority,
-      };
-      await updateToDo(updatedData, toDo.id);
-      await loadTodos();
-    } catch (error) {
-      console.error(error);
-    }
+    await loadTodos();
+    setModalVisible(false);
+    setEditingTodo(null);
   };
 
-  const handleSort = (key: keyof ToDo) => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
+  const handleToggleDone = async (t: ToDo) => {
+    await updateToDo(
+      { ...t, doneFlag: !t.doneFlag, doneDate: !t.doneFlag ? new Date().toISOString() : null },
+      t.id
+    );
+    await loadTodos();
   };
 
   const handleToggleAll = async (done: boolean) => {
-    try {
-      const updatePromises = todos.map(async (toDo) => {
-        if (toDo.doneFlag !== done) {
-          const updatedData = {
-            text: toDo.text,
-            dueDate: toDo.dueDate,
-            doneFlag: done,
-            doneDate: done ? new Date().toISOString() : null,
-            priority: toDo.priority,
-          };
-          return await updateToDo(updatedData, toDo.id);
-        }
-        return null;
-      });
-      await Promise.all(updatePromises);
-      await loadTodos();
-    } catch (error) {
-      console.error(error);
-    }
+    await Promise.all(
+      todos
+        .filter(t => t.doneFlag !== done)
+        .map(t => updateToDo(
+          { ...t, doneFlag: done, doneDate: done ? new Date().toISOString() : null },
+          t.id
+        ))
+    );
+    await loadTodos();
   };
-  const handleStateChange = (value:string) => {
-    setSelectedState(value);
-    setCurrentPage(0);
-  }
-  const handleResetOrder = () => {
-    setSortConfig({key: "id", direction:"asc"});
-  }
 
-  const totalPages = todosPage ? todosPage.totalPage : 0;
+  const handleSort = (key: keyof ToDo) => {
+    const direction =
+      sortConfig && sortConfig.key === key && sortConfig.direction === "asc"
+        ? "desc"
+        : "asc";
+    setSortConfig({ key, direction });
+  };
 
   return (
     <div className="container">
       <h1>To-Do App</h1>
+
       <Filters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         selectedPriority={selectedPriority}
         onPriorityChange={setSelectedPriority}
         selectedState={selectedState}
-        onStateChange={handleStateChange}
+        onStateChange={v => { setSelectedState(v); setCurrentPage(0); }}
       />
-      <button className="new-btn" onClick={() => setModalVisible(true)}>New To Do</button>
-      <button className="reset-btn" onClick={handleResetOrder}>Reset Order</button>
+
+      <button className="new-btn" onClick={() => setModalVisible(true)}>
+        New To-Do
+      </button>
+
       {modalVisible && (
         <ModalTodo
           toDo={editingTodo}
-          onClose={() => {
-            setModalVisible(false);
-            setEditingTodo(null);
-          }}
+          onClose={() => { setModalVisible(false); setEditingTodo(null); }}
           onSave={handleSave}
         />
       )}
+
       <TodoTable
         toDos={todos}
         onDelete={handleDelete}
-        onEdit={handleEdit}
+        onEdit={t => { setEditingTodo(t); setModalVisible(true); }}
         onSort={handleSort}
         sortConfig={sortConfig}
         onMarkDone={handleToggleDone}
         onToggleAll={handleToggleAll}
       />
+
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
+        totalPages={pages}
+        onPageChange={setCurrentPage}
       />
+
       <Metrics metrics={metrics} />
     </div>
   );

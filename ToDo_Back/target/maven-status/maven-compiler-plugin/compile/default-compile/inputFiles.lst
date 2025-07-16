@@ -2,6 +2,7 @@
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/config/WebConfig.java
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/controller/ToDoController.java
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/controller/ToDoControllerImpl.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/dto/MetricsDTO.java
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/dto/ToDoDTO.java
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/exception/ResourceNotFoundException.java
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/main/java/com/example/v0/demo/exception/ValidationException.java

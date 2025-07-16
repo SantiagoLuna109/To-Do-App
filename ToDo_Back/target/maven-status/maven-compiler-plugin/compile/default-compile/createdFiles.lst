@@ -14,5 +14,6 @@ com/example/v0/demo/dto/ToDoDTO$ToDoDTOBuilder.class
 com/example/v0/demo/config/WebConfig.class
 com/example/v0/demo/service/ToDoServiceImpl.class
 com/example/v0/demo/service/ToDoService.class
+com/example/v0/demo/dto/MetricsDTO.class
 com/example/v0/demo/model/ToDosResponse.class
 com/example/v0/demo/controller/ToDoControllerImpl.class
