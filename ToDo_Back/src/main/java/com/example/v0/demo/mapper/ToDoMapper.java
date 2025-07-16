@@ -3,12 +3,13 @@ package com.example.v0.demo.mapper;
 import com.example.v0.demo.dto.ToDoDTO;
 import com.example.v0.demo.model.ToDo;
 import org.mapstruct.*;
+import org.mapstruct.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface ToDoMapper {
 
     ToDoDTO toDto(ToDo entity);

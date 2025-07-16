@@ -2,11 +2,16 @@ package com.example.v0.demo.controller;
 
 import com.example.v0.demo.dto.ToDoDTO;
 import com.example.v0.demo.mapper.ToDoMapper;
+import com.example.v0.demo.model.ToDo;
 import com.example.v0.demo.service.ToDoService;
+import com.example.v0.demo.service.ToDoServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -19,14 +24,18 @@ public class ToDoControllerImpl implements ToDoController {
     private final ToDoMapper mapper;
 
     @Override
-    public ResponseEntity<ToDoDTO> createToDo(ToDoDTO dto) {
-        return ResponseEntity
-                .status(201)
-                .body(mapper.toDto(toDoService.add(mapper.toEntity(dto))));
+    public ResponseEntity<ToDoDTO> createToDo(@Valid @RequestBody ToDoDTO dto) {
+        System.out.println("### Controller sees dto.text = " + dto.getText());
+
+        ToDo entity = mapper.toEntity(dto);
+        System.out.println("### After mapping entity.text = " + entity.getText());
+        ToDo saved = toDoService.add(mapper.toEntity(dto));
+        return ResponseEntity.status(201).body(mapper.toDto(saved));
     }
 
+
     @Override
-    public ResponseEntity<ToDoDTO> updateToDo(Long id, ToDoDTO dto) {
+    public ResponseEntity<ToDoDTO> updateToDo(@PathVariable Long id, @Valid @RequestBody ToDoDTO dto) {
         return ResponseEntity.ok(
                 mapper.toDto(toDoService.update(id, mapper.toEntity(dto))));
     }

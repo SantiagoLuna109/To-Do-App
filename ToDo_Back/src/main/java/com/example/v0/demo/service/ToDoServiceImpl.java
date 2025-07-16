@@ -5,7 +5,10 @@ import com.example.v0.demo.model.PageResponse;
 import com.example.v0.demo.model.ToDo;
 import com.example.v0.demo.repository.ToDoRepository;
 import com.example.v0.demo.util.Validator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,8 +26,8 @@ import java.util.stream.Collectors;
 public class ToDoServiceImpl implements  ToDoService{
     private final ToDoRepository repository;
 
-    public ToDo add(ToDo toDo) {
-        Validator.isNotEmpty(toDo.getText());
+    public ToDo add(@Valid ToDo toDo) {
+        System.out.println("### Service received entity.text = " + toDo.getText()); // <--
         return repository.save(toDo);
     }
 

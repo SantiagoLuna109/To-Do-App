@@ -1,24 +1,34 @@
 package com.example.v0.demo.dto;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ToDoDTO {
 
     private Long id;
 
-    @NotBlank(message = "text must not be blank")
+    @NotBlank(message = "Text must not be blank")
     private String text;
 
-    @FutureOrPresent(message = "dueDate cannot be in the past")
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
-    private boolean doneFlag;
+    @Builder.Default
+    private Boolean doneFlag = false;
 
-    @Min(value = 1) @Max(value = 5)
-    private Integer priority;
+    private LocalDateTime doneDate;
+
+    @NotNull
+    @Builder.Default
+    private Integer priority = 3;
 }
 
