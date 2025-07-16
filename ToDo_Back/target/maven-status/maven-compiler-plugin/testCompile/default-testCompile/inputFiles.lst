@@ -1,1 +1,5 @@
 /Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/test/java/com/example/v0/demo/DemoApplicationTests.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/test/java/com/example/v0/demo/mapper/ToDoMapperTest.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/test/java/com/example/v0/demo/repository/ToDoRepositoryTest.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/test/java/com/example/v0/demo/service/ToDoServiceImplTest.java
+/Users/luis.luna/Desktop/To-Do-App/ToDo_Back/src/test/java/com/example/v0/demo/validation/ValidatorTest.java

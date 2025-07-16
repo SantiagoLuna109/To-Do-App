@@ -1,5 +1,6 @@
 package com.example.v0.demo.service;
 
+import com.example.v0.demo.dto.MetricsDTO;
 import com.example.v0.demo.dto.ToDoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,5 +13,7 @@ public interface ToDoService {
     ToDoDTO       update(Long id, ToDoDTO dto);
     ToDoDTO       markDone(Long id);
     void          delete(Long id);
+    MetricsDTO metrics(String text, Integer priority, Boolean done);
+    Page<ToDoDTO> search(String text, Integer priority, Boolean done, Pageable pageable);
 }
 
