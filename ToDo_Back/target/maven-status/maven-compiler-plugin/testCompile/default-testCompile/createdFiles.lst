@@ -1,1 +1,5 @@
+com/example/v0/demo/mapper/ToDoMapperTest.class
+com/example/v0/demo/service/ToDoServiceImplTest.class
 com/example/v0/demo/DemoApplicationTests.class
+com/example/v0/demo/validation/ValidatorTest.class
+com/example/v0/demo/repository/ToDoRepositoryTest.class
