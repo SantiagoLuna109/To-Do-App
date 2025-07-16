@@ -1,79 +1,55 @@
 package com.example.v0.demo.controller;
 
 import com.example.v0.demo.dto.ToDoDTO;
-import com.example.v0.demo.mapper.ToDoMapper;
-import com.example.v0.demo.model.ToDo;
 import com.example.v0.demo.service.ToDoService;
-import com.example.v0.demo.service.ToDoServiceImpl;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/todos")
 @RequiredArgsConstructor
 public class ToDoControllerImpl implements ToDoController {
 
-    private final ToDoService toDoService;
-    private final ToDoMapper mapper;
+    private final ToDoService service;
 
     @Override
-    public ResponseEntity<ToDoDTO> createToDo(@Valid @RequestBody ToDoDTO dto) {
-        System.out.println("### Controller sees dto.text = " + dto.getText());
-
-        ToDo entity = mapper.toEntity(dto);
-        System.out.println("### After mapping entity.text = " + entity.getText());
-        ToDo saved = toDoService.add(mapper.toEntity(dto));
-        return ResponseEntity.status(201).body(mapper.toDto(saved));
-    }
-
-
-    @Override
-    public ResponseEntity<ToDoDTO> updateToDo(@PathVariable Long id, @Valid @RequestBody ToDoDTO dto) {
-        return ResponseEntity.ok(
-                mapper.toDto(toDoService.update(id, mapper.toEntity(dto))));
+    @GetMapping
+    public ResponseEntity<Page<ToDoDTO>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @Override
-    public ResponseEntity<Void> deleteToDo(Long id) {
-        toDoService.delete(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<ToDoDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    @Override
+    @PostMapping
+    public ResponseEntity<ToDoDTO> create(@RequestBody ToDoDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
+    }
+
+    @Override
+    @PutMapping("/{id}")
+    public ResponseEntity<ToDoDTO> update(@PathVariable Long id, @RequestBody ToDoDTO dto) {
+        return ResponseEntity.ok(service.update(id, dto));
+    }
+
+    @Override
+    @PutMapping("/{id}/done")
+    public ResponseEntity<ToDoDTO> markDone(@PathVariable Long id) {
+        return ResponseEntity.ok(service.markDone(id));
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @Override
-    public ResponseEntity<Page<ToDoDTO>> getTodos(Pageable pageable,
-                                                  Boolean done,
-                                                  String name,
-                                                  Integer priority) {
-        Page<ToDoDTO> page = mapper.toDtoPage(
-                toDoService.getToDos(done, name, priority, pageable));
-
-        return ResponseEntity.ok(page);
-    }
-
-    @Override
-    public ResponseEntity<ToDoDTO> markAsDone(Long id) {
-        return ResponseEntity.ok(
-                mapper.toDto(toDoService.markAsDone(id)));
-    }
-
-    @Override
-    public ResponseEntity<ToDoDTO> markAsUndone(Long id) {
-        return ResponseEntity.ok(
-                mapper.toDto(toDoService.markAsUndone(id)));
-    }
-
-    @Override
-    public ResponseEntity<Map<String, Object>> getMetrics(Boolean done,
-                                                          String name,
-                                                          Integer priority) {
-        return ResponseEntity.ok(
-                toDoService.calculateMetrics(done, name, priority));
-    }
 }
+
