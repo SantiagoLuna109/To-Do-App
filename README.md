@@ -3,6 +3,7 @@
 - OpenJDK Runtime Environment Corretto-23.0.2.7.1
 - At least the Node version of: v22.14.0
 - Have installed REACT
+- Have installed PostgreSQL 17 and have installed the tools for them
 - Verify ig you have no problems with the next dependencies of React:
 - {
   npm: '10.9.2',
@@ -42,6 +43,28 @@
 - react-dom@19.1.0 extraneous
 - react@19.1.0 deduped
 - react@19.1.0 extraneous
+- Also to verify that you have your own database schema correctly please use the next commands:
+  - Create the db and the roles, open your terminal and use the next commands:
+    ```bash
+    psql -U postgres
+    ```
+    Then:
+    ```bash
+    -- 1. Create a login role the Spring app will use
+    CREATE ROLE todo_app WITH LOGIN PASSWORD 'secret';
+    
+    -- 2. Create the database and make the new role the owner
+    CREATE DATABASE todos OWNER todo_app;
+    
+    -- 3. (Optional but tidy) Grant everything on that DB
+    GRANT ALL PRIVILEGES ON DATABASE todos TO todo_app;
+    \q   -- quit psql
+    ```
+    And for verify the connection:
+    ```bash
+    psql -h localhost -p 5432 -U todo_app -d todos -W
+    ```  
+
 ## How to use this App?
 In a terminar copy the next:
 ```bash
