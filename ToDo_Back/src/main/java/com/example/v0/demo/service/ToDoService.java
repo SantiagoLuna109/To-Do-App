@@ -1,22 +1,16 @@
 package com.example.v0.demo.service;
 
-import com.example.v0.demo.model.ToDo;
+import com.example.v0.demo.dto.ToDoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Map;
-
 public interface ToDoService {
-    List<ToDo> findAll();
-    ToDo add(ToDo toDo);
-    boolean delete(Long id);
-    ToDo update(Long id, ToDo toDo);
-    Page<ToDo> getToDos(Boolean done,
-                        String name,
-                        Integer priority,
-                        Pageable pageable);
-    ToDo markAsDone(Long id);
-    ToDo markAsUndone(Long id);
-    Map<String, Object> calculateMetrics(Boolean done, String name, Integer priority);
+
+    Page<ToDoDTO> findAll(Pageable pageable);
+    ToDoDTO       findById(Long id);
+    ToDoDTO       create(ToDoDTO dto);
+    ToDoDTO       update(Long id, ToDoDTO dto);
+    ToDoDTO       markDone(Long id);
+    void          delete(Long id);
 }
+
