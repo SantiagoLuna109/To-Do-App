@@ -73,9 +73,7 @@ const ModalTodo: React.FC<Props> = ({ open, initial, onCancel, onSave }) => {
               placeholder="Describe the task…"
               className="rounded-md border border-zinc-600 bg-zinc-900 p-2"
             />
-          </div>
 
-          <div className="modal-row">
             <label htmlFor="todo-priority" className="font-medium">
               Priority
             </label>
@@ -90,9 +88,7 @@ const ModalTodo: React.FC<Props> = ({ open, initial, onCancel, onSave }) => {
               <option value={2}>Medium</option>
               <option value={3}>Low</option>
             </select>
-          </div>
 
-          <div className="modal-row">
             <label htmlFor="todo-due" className="font-medium">
               Due date&nbsp;(optional)
             </label>
@@ -104,9 +100,6 @@ const ModalTodo: React.FC<Props> = ({ open, initial, onCancel, onSave }) => {
               onChange={(e) => setDue(e.target.value)}
               className="rounded-md border border-zinc-600 bg-zinc-900 p-2"
             />
-          </div>
-
-          <div className="modal-row checkbox-label">
             <input
               id="todo-done"
               type="checkbox"
