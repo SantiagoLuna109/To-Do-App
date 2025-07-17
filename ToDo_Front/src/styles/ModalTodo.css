@@ -30,7 +30,7 @@
 }
 .modal-actions{
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .modal-actions button{
@@ -39,4 +39,8 @@
     box-shadow: 0 2px 4px rgb(20, 20, 20);
     border-radius: 4px;
     cursor: pointer;
+}
+
+.check_modal{
+    border-left: 10px;
 }
