@@ -57,60 +57,88 @@ const ModalTodo: React.FC<Props> = ({ open, initial, onCancel, onSave }) => {
           {initial ? 'Edit To-Do' : 'New To-Do'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <label className="grid gap-2">
-            <span className="font-medium">
+        <form onSubmit={handleSubmit}>
+          <div className="modal-row">
+            <label htmlFor="todo-text" className="font-medium">
               Text<span className="text-red-500">*</span>
-            </span>
+            </label>
+
             <input
-              required autoFocus type="text" value={text}
-              onChange={e => setText(e.target.value)}
+              id="todo-text"
+              type="text"
+              required
+              autoFocus
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Describe the task…"
               className="rounded-md border border-zinc-600 bg-zinc-900 p-2"
             />
-          </label>
+          </div>
 
-          <label className="grid gap-2">
-            <span className="font-medium">Priority</span>
+          <div className="modal-row">
+            <label htmlFor="todo-priority" className="font-medium">
+              Priority
+            </label>
+
             <select
+              id="todo-priority"
               value={priority}
-              onChange={e => setPriority(Number(e.target.value) as Priority)}
+              onChange={(e) => setPriority(Number(e.target.value) as Priority)}
               className="rounded-md border border-zinc-600 bg-zinc-900 p-2"
             >
-              {[1, 2, 3].map(p => (
-                <option key={p} value={p}>{label[p as Priority]}</option>
-              ))}
+              <option value={1}>High</option>
+              <option value={2}>Medium</option>
+              <option value={3}>Low</option>
             </select>
-          </label>
+          </div>
 
-          <label className="grid gap-2">
-            <span className="font-medium">Due date (optional)</span>
+          <div className="modal-row">
+            <label htmlFor="todo-due" className="font-medium">
+              Due date&nbsp;(optional)
+            </label>
+
             <input
-              type="datetime-local" value={due}
-              onChange={e => setDue(e.target.value)}
+              id="todo-due"
+              type="datetime-local"
+              value={due}
+              onChange={(e) => setDue(e.target.value)}
               className="rounded-md border border-zinc-600 bg-zinc-900 p-2"
             />
-          </label>
+          </div>
 
-          <label className="inline-flex items-center gap-2">
+          <div className="modal-row checkbox-label">
             <input
-              type="checkbox" checked={done}
-              onChange={e => setDone(e.target.checked)}
+              id="todo-done"
+              type="checkbox"
+              checked={done}
+              onChange={(e) => setDone(e.target.checked)}
               className="h-4 w-4 accent-green-500"
             />
-            <span className="select-none">Mark as done</span>
-          </label>
+            <label htmlFor="todo-done" className="select-none">
+              Mark as done
+            </label>
+          </div>
 
-          <div className="mt-2 flex justify-end gap-3">
-            <button type="button" onClick={onCancel}
-                    className="rounded-md px-4 py-2 text-sm hover:bg-zinc-700">
+          <div className="modal-actions">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-md px-4 py-2 text-sm hover:bg-zinc-700"
+            >
               Cancel
             </button>
-            <button type="submit" disabled={!text.trim()}
-                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white enabled:hover:bg-blue-500 disabled:opacity-40">
+
+            <button
+              type="submit"
+              disabled={!text.trim()}
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white
+                        enabled:hover:bg-blue-500 disabled:opacity-40"
+            >
               {initial ? 'Save' : 'Create'}
             </button>
           </div>
         </form>
+        
       </div>
     </div>
   );
