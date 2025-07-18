@@ -14,29 +14,43 @@
 .modal h2{
     text-align: center;
 }
+
+.check_modal{
+    border-left: 10px;
+}
+
+/* ModalTodo.css  ───────────────────────────────────────────── */
+
 .modal-row{
     display: flex;
     align-items: center;
-}
-
-.modal-row input, .modal-row select {
-    flex: 1;
+    column-gap: 1rem;      
+    margin-bottom: 1.25rem;   
 }
 
 .checkbox-label{
     display: flex;
     align-items: center;
+    column-gap: .5rem;         
     font-weight: bold;
-}
-.modal-actions{
-    display: flex;
-    justify-content: flex-end;
+    margin-top: .25rem;        
 }
 
+.modal-actions{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;           
+    margin-top: 1.5rem;       
+}
 .modal-actions button{
     background-color: rgb(41, 41, 41);
     border: 1px solid rgb(31, 31, 31);
     box-shadow: 0 2px 4px rgb(20, 20, 20);
     border-radius: 4px;
     cursor: pointer;
+}
+.modal-row input[type="text"],
+.modal-row input[type="datetime-local"],
+.modal-row select{
+    flex: 1 1 auto;
 }

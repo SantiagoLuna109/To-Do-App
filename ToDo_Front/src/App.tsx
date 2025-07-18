@@ -113,6 +113,7 @@ const App: React.FC = () => {
         : "asc";
     setSortConfig({ key, direction });
   };
+  
 
   return (
     <div className="container">
@@ -133,11 +134,14 @@ const App: React.FC = () => {
 
       {modalVisible && (
         <ModalTodo
-          toDo={editingTodo}
-          onClose={() => { setModalVisible(false); setEditingTodo(null); }}
+          open={modalVisible}
+          initial={editingTodo}
+          onCancel={() => setModalVisible(false)}
           onSave={handleSave}
         />
       )}
+
+
 
       <TodoTable
         toDos={todos}
